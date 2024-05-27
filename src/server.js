@@ -4,7 +4,8 @@ import cors from 'cors';
 import { env } from './utils/env.js'; // Переконайтеся, що цей шлях правильний
 import { getAllContacts, getContactById } from './services/contacts.js';
 
-const PORT = Number(env('PORT', '3000'));
+// const PORT = Number(env('PORT', '3000'));
+const PORT = process.env.PORT || Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
