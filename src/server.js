@@ -1,16 +1,20 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
-import { env } from './utils/env.js'; // Переконайтеся, що цей шлях правильний
-import { getAllContacts, getContactById } from './services/contacts.js';
+import { env } from './utils/env.js';
+import routerContacts from './routers/contacts.js';
+import createHttpError from 'http-errors';
 
-// const PORT = Number(env('PORT', '3000'));
 const PORT = process.env.PORT || Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
+  app.use(
+    express.json({
+      type: ['application/json', 'application/vnd.api+json'],
+    }),
+  );
 
-  app.use(express.json());
   app.use(cors());
 
   app.use(
@@ -20,94 +24,59 @@ export const setupServer = () => {
       },
     }),
   );
-
-  app.get('/contacts', async (req, res) => {
-    try {
-      const contacts = await getAllContacts(); // Реєстрація роута для отримання всіх контактів
-
-      res.status(200).json({
-        status: 'success',
-        message: 'Successfully found contacts!',
-        data: contacts,
-      });
-    } catch (err) {
-      res.status(500).json({
-        status: 'error',
-        message: 'Error fetching contacts',
-        data: null,
-      });
-    }
-  });
-
-  app.get('/contacts/:contactId', async (req, res) => {
-    try {
-      const { contactId } = req.params;
-
-      if (!contactId) {
-        return res.status(404).json({
-          status: 404,
-          message: 'Not found',
-        });
-      }
-
-      const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
-
-      if (!contact) {
-        return res.status(404).json({
-          status: 404,
-          message: 'Not found',
-        });
-      }
-
-      res.status(200).json({
-        status: 'success',
-        message: `Successfully found contact with id ${contactId}!`,
-        data: contact,
-      });
-    } catch (err) {
-      res.status(404).json({
-        status: 404,
-        message: 'Not found',
-      });
-    }
-  });
-
-  // Обробка неіснуючих маршрутів
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      status: 404,
-      message: 'Not found',
-    });
-  });
+  // Додаємо роутер до app як middleware
+  app.use(routerContacts);
 
   // Обробка помилок сервера
-  app.use((err, req, res, next) => {
-    res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong',
-      data: null,
+  const errorHandler = (err, req, res, next) => {
+    // Перевірка, чи отримали ми помилку від createHttpError (http://localhost:3000/contacts/777)
+    if (err instanceof createHttpError.HttpError) {
+      res.status(err.status).json({
+        status: err.status,
+        message: err.message,
+        data: { message: 'Contact not found' },
+      });
+    } else {
+      res.status(500).json({
+        status: 500,
+        message: 'Something went wrong',
+      });
+    }
+  };
+
+  // Обробка неіснуючих маршрутів http://localhost:3000/cont7777acts/
+  //localhost:3000/
+  const notFoundHandler = (req, res, next) => {
+    res.status(404).json({
+      status: 404,
+      message: 'Route not found',
     });
-  });
+  };
+
+  // Применяем middleware для обработки ошибок
+
+  app.use('*', notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
   });
 };
-
-//============================================================
+//===============================================================================
 // import express from 'express';
 // import pino from 'pino-http';
 // import cors from 'cors';
-// import { env } from './utils/env.js'; // Переконайтеся, що цей шлях правильний
-// import { getAllContacts, getContactById } from './services/contacts.js';
+// import { env } from './utils/env.js';
+// import routerContacts from './routers/contacts.js';
+// import createHttpError from 'http-errors';
 
 // // const PORT = Number(env('PORT', '3000'));
 // const PORT = process.env.PORT || Number(env('PORT', '3000'));
 
 // export const setupServer = () => {
 //   const app = express();
-
 //   app.use(express.json());
+
 //   app.use(cors());
 
 //   app.use(
@@ -117,43 +86,90 @@ export const setupServer = () => {
 //       },
 //     }),
 //   );
+//   // Додаємо роутер до app як middleware
+//   app.use(routerContacts);
 
-//   app.get('/contacts', async (req, res) => {
-//     const contacts = await getAllContacts(); // Реєстрація роута для отримання всіх контактів
+//   //Обробка неіснуючих маршрутів
+//   // app.use('*', (req, res, next) => {
+//   //   res.status(404).json({
+//   //     status: 404,
+//   //     message: 'Not found',
+//   //   });
+//   // });
 
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'Successfully found contacts!',
-//       data: contacts,
-//     });
-//   });
+//   // // Обробка неіснуючих маршрутів http://localhost:3000/cont7777acts/
+//   // //localhost:3000/
+//   // http: app.use('*', (req, res, next) => {
+//   //   next(createHttpError(404, 'Route not found'));
+//   // });
 
-//   app.get('/contacts/:contactId', async (req, res) => {
-//     const { contactId } = req.params;
-//     const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
-
-//     res.status(200).json({
-//       status: 'success',
-//       message: `Successfully found contact with id ${contactId}!`,
-//       data: contact,
-//     });
-//   });
-
-//   app.use('*', (req, res, next) => {
-//     res.status(404).json({
-//       status: 'error',
-//       message: 'Not found',
-//       data: null,
-//     });
-//   });
-
-//   app.use((err, req, res, next) => {
+//   // Обробка помилок сервера
+//   const errorHandler = (err, req, res, next) => {
+//     // Перевірка, чи отримали ми помилку від createHttpError (http://localhost:3000/contacts/777)
+//     if (err instanceof createHttpError.HttpError) {
+//       res.status(err.status).json({
+//         status: err.status,
+//         message: err.name,
+//         data: err,
+//         // data: err.expose ? err.message : {},
+//       });
+//       return;
+//     }
+//     //http://localhost:3000/contacts/enenvekj
 //     res.status(500).json({
-//       status: 'error',
+//       // status: 'error',
 //       message: 'Something went wrong',
-//       data: null,
+//       data: err.message,
 //     });
+//   };
+
+//   // Обробка неіснуючих маршрутів http://localhost:3000/cont7777acts/
+//   //localhost:3000/
+//   const notFoundHandler = (req, res, next) => {
+//     res.status(404).json({
+//       message: 'Route not found',
+//     });
+//   };
+
+//   // Применяем middleware для обработки ошибок
+
+//   app.use('*', notFoundHandler);
+//   app.use(errorHandler);
+
+//   app.listen(PORT, () => {
+//     console.log(`Server is running on port: ${PORT}`);
 //   });
+// };
+//========================================================================
+// app.use(express.json());
+// app.use(cors());
+
+// app.use(
+//   pino({
+//     transport: {
+//       target: 'pino-pretty',
+//     },
+//   }),
+// );
+// // Додаємо роутер до app як middleware
+// app.use(router);
+
+// // Обробка неіснуючих маршрутів
+// app.use('*', (req, res, next) => {
+//   res.status(404).json({
+//     status: 404,
+//     message: 'Not found',
+//   });
+// });
+
+// Обробка помилок сервера
+// app.use((err, req, res, next) => {
+//   res.status(500).json({
+//     status: 'error',
+//     message: 'Something went wrong',
+//     data: null,
+//   });
+// });
 
 //   app.listen(PORT, () => {
 //     console.log(`Server is running on port: ${PORT}`);
