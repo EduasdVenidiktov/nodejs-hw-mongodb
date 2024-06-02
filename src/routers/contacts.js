@@ -22,12 +22,10 @@ export const ctrlWrapper = (controller) => {
 routerContacts.get('/contacts', ctrlWrapper(getContactsController));
 routerContacts.get('/contacts/:contactId', ctrlWrapper(getContactIdController));
 routerContacts.post('/contacts', ctrlWrapper(createContactController));
-
 routerContacts.delete(
   '/contacts/:contactId',
   ctrlWrapper(deleteContactByIdController),
 );
-
 routerContacts.patch(
   '/contacts/:contactId',
   ctrlWrapper(patchContactController),

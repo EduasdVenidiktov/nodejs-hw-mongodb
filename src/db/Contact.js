@@ -28,6 +28,7 @@ const contactsSchema = new Schema(
   },
   {
     timestamps: true, // Automatically handle createdAt and updatedAt fields
+    versionKey: false, //without '__V": 0;
   },
 );
 

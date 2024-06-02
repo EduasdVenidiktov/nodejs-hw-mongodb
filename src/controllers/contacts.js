@@ -30,7 +30,7 @@ export const getContactIdController = async (req, res, next) => {
 
   // Проверка валидности ObjectId
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
-    return next(handleHttpError(404, 'Contact not found', res, next));
+    return next(handleHttpError(404, 'Contact not found'));
   }
 
   const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
@@ -75,12 +75,8 @@ export const deleteContactByIdController = async (req, res, next) => {
     return next(createHttpError(404, 'Contact not found'));
   }
   const contact = await deleteContactById(contactId);
-  if (!contact)
-    return res.status(404).json({
-      status: 404,
-      message: 'Contact not found!',
-      data: { message: 'Contact not found' },
-    });
+  if (!contact) return next(createHttpError(404, 'Contact not found'));
+
   res.status(204).send();
 };
 
@@ -96,54 +92,3 @@ export const patchContactController = async (req, res, next) => {
     data: updateContact,
   });
 };
-
-//===============ДЗ 2======================================================================
-// router.get('/contacts', async (req, res) => {
-//   try {
-//     const contacts = await getAllContacts(); // Реєстрація роута для отримання всіх контактів
-
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'Successfully found contacts!',
-//       data: contacts,
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 'error',
-//       message: 'Error fetching contacts',
-//       data: null,
-//     });
-//   }
-// });
-
-// router.get('/contacts/:contactId', async (req, res, next) => {
-//   try {
-//     const { contactId } = req.params;
-//     const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
-
-//     if (!contactId) {
-//       return res.status(404).json({
-//         status: 404,
-//         message: 'Not found',
-//       });
-//     }
-
-//     if (!contact) {
-//       return res.status(404).json({
-//         status: 404,
-//         message: 'Not found',
-//       });
-//     }
-
-//     res.status(200).json({
-//       status: 'success',
-//       message: `Successfully found contact with id ${contactId}!`,
-//       data: contact,
-//     });
-//   } catch (err) {
-//     res.status(404).json({
-//       status: 404,
-//       message: 'Not found',
-//     });
-//   }
-// });
