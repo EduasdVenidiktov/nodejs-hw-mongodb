@@ -33,14 +33,17 @@ const handleHttpError = (status, message) => {
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
+  // console.log(`Parsed params - Page: ${page}, PerPage: ${perPage}`);
 
   //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
   const contacts = await getAllContacts({
     page,
     perPage,
   });
+  // console.log(`Contacts Data:`, contacts);
+
   res.status(200).json({
-    status: 'success',
+    status: 200,
     message: 'Successfully found contacts!',
     data: contacts,
   });
