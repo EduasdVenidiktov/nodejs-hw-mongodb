@@ -6,6 +6,8 @@ export const getAllContacts = async ({ page, perPage }) => {
   const limit = perPage; //кількість елементів на сторінці
   const skip = (page - 1) * perPage; //Кількість елементів, які потрібно пропустити, щоб почати з потрібної сторінки
 
+  // console.log(`Fetching contacts -Skip: ${skip}, Limit: ${limit}`);
+
   const contactsQuery = ContactsCollection.find();
 
   // const contactsCount = await ContactsCollection.find()
@@ -13,6 +15,8 @@ export const getAllContacts = async ({ page, perPage }) => {
   //   .countDocuments();
   const contactsCount = await ContactsCollection.countDocuments(); // отримання загальної кількості контактів
   const contacts = await contactsQuery.skip(skip).limit(limit).exec();
+
+  // console.log(`Total Contacts: ${contactsCount}`);
 
   const paginationData = calculatePaginationData(contactsCount, page, perPage);
   return {
