@@ -17,14 +17,23 @@ export const getAllContacts = async ({
   // const contactsCount = await ContactsCollection.find()
   //   .merge(contactsQuery)
   //   .countDocuments();
-  const contactsCount = await ContactsCollection.countDocuments(); // отримання загальної кількості контактів
-  // const contacts = await contactsQuery.skip(skip).limit(limit).exec();
+  // const contactsCount = await ContactsCollection.countDocuments(); // отримання загальної кількості контактів
+  // // const contacts = await contactsQuery.skip(skip).limit(limit).exec();
 
-  const contacts = await contactsQuery
-    .skip(skip) //якщо page = 2 і perPage = 10, то skip = 10, тобто буде пропущено 10 документів.
-    .limit(limit) //обмежує кількість документів, які будуть повернуті в результаті запиту.якщо perPage = 10, то буде вибрано лише 10 документів.
-    .sort({ [sortBy]: sortOrder }) //Метод sort сортує документи у колекції за певним полем (sortBy) у вказаному порядку (sortOrder).Використання квадратних дужок { [sortBy]: sortOrder } дозволяє динамічно вказувати поле для сортування. Наприклад, якщо sortBy = 'name' і sortOrder = 'asc', то { [sortBy]: sortOrder } еквівалентно { name: 'asc' }.
-    .exec(); //Метод exec виконує побудований запит до бази даних і повертає проміс.
+  // const contacts = await contactsQuery
+  //   .skip(skip) //якщо page = 2 і perPage = 10, то skip = 10, тобто буде пропущено 10 документів.
+  //   .limit(limit) //обмежує кількість документів, які будуть повернуті в результаті запиту.якщо perPage = 10, то буде вибрано лише 10 документів.
+  //   .sort({ [sortBy]: sortOrder }) //Метод sort сортує документи у колекції за певним полем (sortBy) у вказаному порядку (sortOrder).Використання квадратних дужок { [sortBy]: sortOrder } дозволяє динамічно вказувати поле для сортування. Наприклад, якщо sortBy = 'name' і sortOrder = 'asc', то { [sortBy]: sortOrder } еквівалентно { name: 'asc' }.
+  //   .exec(); //Метод exec виконує побудований запит до бази даних і повертає проміс.
+
+  const [contactsCount, contacts] = await Promise.all([
+    ContactsCollection.countDocuments(), //отримання загальної кількості контактів
+    contactsQuery
+      .skip(skip) //якщо page = 2 і perPage = 10, то skip = 10, тобто буде пропущено 10 документів.
+      .limit(limit) //обмежує кількість документів, які будуть повернуті в результаті запиту.якщо perPage = 10, то буде вибрано лише 10 документів.
+      .sort({ [sortBy]: sortOrder }) //Метод sort сортує документи у колекції за певним полем (sortBy) у вказаному порядку (sortOrder).Використання квадратних дужок { [sortBy]: sortOrder } дозволяє динамічно вказувати поле для сортування. Наприклад, якщо sortBy = 'name' і sortOrder = 'asc', то { [sortBy]: sortOrder } еквівалентно { name: 'asc' }.
+      .exec(),
+  ]);
 
   const paginationData = calculatePaginationData(contactsCount, page, perPage);
   return {
