@@ -9,6 +9,7 @@ import {
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parselSortParams.js';
 // import { ContactsCollection } from '../db/Contact.js';
 
 export const routerContacts = Router();
@@ -33,14 +34,16 @@ const handleHttpError = (status, message) => {
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
-  // console.log(`Parsed params - Page: ${page}, PerPage: ${perPage}`);
+
+  const { sortBy, sortOrder } = parseSortParams(req.query);
 
   //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
   const contacts = await getAllContacts({
     page,
     perPage,
+    sortBy,
+    sortOrder,
   });
-  // console.log(`Contacts Data:`, contacts);
 
   res.status(200).json({
     status: 200,
@@ -73,14 +76,14 @@ export const getContactIdController = async (req, res, next) => {
 
 export const createContactController = async (req, res, next) => {
   try {
-    const { name, phoneNumber, email, isFavourite, contactType } = req.body; // Прямое использование req.body
+    const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
     const contact = await createContact({
       name,
       phoneNumber,
       email,
       isFavourite,
       contactType,
-    });
+    }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
 
     res.status(201).json({
       status: 201,
@@ -88,7 +91,7 @@ export const createContactController = async (req, res, next) => {
       data: contact,
     });
   } catch (error) {
-    next(error);
+    next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
   }
 };
 
