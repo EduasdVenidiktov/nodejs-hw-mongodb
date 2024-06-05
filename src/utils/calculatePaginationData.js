@@ -5,10 +5,6 @@
 export const calculatePaginationData = (count, page, perPage) => {
   const totalPages = Math.ceil(count / perPage); //обчислює загальну кількість сторінок,
 
-  //   console.log(
-  //     `Calculating pagination - Count: ${count}, Page: ${page}, PerPage: ${perPage}, TotalPages: ${totalPages}`,
-  //   );
-
   //Перевірка наявності наступної сторінки:
   //   const hasNextPage = Boolean(totalPages - 1); //можливо помилковий рядок
   const hasNextPage = page < totalPages; //застосувати цей рядок
