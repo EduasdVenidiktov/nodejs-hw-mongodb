@@ -72,39 +72,16 @@ export const getContactIdController = async (req, res, next) => {
   });
 };
 
-// export const createContactController = async (req, res, next) => {
-//   try {
-//     const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
-//     const contact = await createContact({
-//       name,
-//       phoneNumber,
-//       email,
-//       isFavourite,
-//       contactType,
-//     }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
-
-//     res.status(201).json({
-//       status: 201,
-//       message: 'Successfully created a contact!',
-//       data: contact,
-//     });
-//   } catch (error) {
-//     next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
-//   }
-// };
-
 export const createContactController = async (req, res, next) => {
   try {
-    console.log('Request body:', req.body); // Логування вхідних даних
-    const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+    const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
     const contact = await createContact({
       name,
       phoneNumber,
       email,
       isFavourite,
       contactType,
-    });
-    console.log('Created contact:', contact); // Логування створеного контакту
+    }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
 
     res.status(201).json({
       status: 201,
@@ -112,8 +89,7 @@ export const createContactController = async (req, res, next) => {
       data: contact,
     });
   } catch (error) {
-    console.error('Error creating contact:', error); // Логування помилок
-    next(error);
+    next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
   }
 };
 
