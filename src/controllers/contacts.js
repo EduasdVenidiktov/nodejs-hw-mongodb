@@ -9,16 +9,14 @@ import {
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-import { parseSortParams } from '../utils/parselSortParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 // import { ContactsCollection } from '../db/Contact.js';
 
 export const routerContacts = Router();
 
 export const validateBody = (schema) => async (req, res, next) => {
   try {
-    await schema.validateAsync(req.body, {
-      abortEarly: false,
-    });
+    await schema.validateAsync(req.body, { abortEarly: false });
     next();
   } catch (err) {
     const error = createHttpError(400, 'Bad Request', {

@@ -37,6 +37,7 @@
 
 // //============= ДЗ 4 ========================
 import Router from 'express';
+
 import {
   createContactController,
   deleteContactByIdController,
@@ -49,7 +50,7 @@ import { createContactsSchema, updateContactsSchema } from '../db/Contact.js';
 
 const routerContacts = Router();
 
-export const ctrlWrapper = (controller) => {
+const ctrlWrapper = (controller) => {
   return async (req, res, next) => {
     try {
       await controller(req, res, next);
