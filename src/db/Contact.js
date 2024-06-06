@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import Joi from 'joi';
 
 const contactsSchema = new Schema(
   {
@@ -35,7 +36,6 @@ const contactsSchema = new Schema(
 export const ContactsCollection = model('contacts', contactsSchema); //створюємо модель студента
 
 //===================== ДЗ 4 ==============================================================
-import Joi from 'joi';
 
 export const createContactsSchema = Joi.object({
   name: Joi.string().min(3).max(20).required().messages({
