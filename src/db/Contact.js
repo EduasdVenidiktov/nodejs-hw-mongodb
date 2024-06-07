@@ -6,14 +6,20 @@ const contactsSchema = new Schema(
     name: {
       type: String,
       required: true,
+      minlength: 3,
+      maxlength: 20,
     },
     phoneNumber: {
       type: String,
       required: true,
+      minlength: 3,
+      maxlength: 20,
     },
     email: {
       type: String,
       required: false,
+      minlength: 3,
+      maxlength: 20,
     },
     isFavourite: {
       type: Boolean,
@@ -34,8 +40,6 @@ const contactsSchema = new Schema(
 );
 
 export const ContactsCollection = model('contacts', contactsSchema); //створюємо модель студента
-
-//===================== ДЗ 4 ==============================================================
 
 export const createContactsSchema = Joi.object({
   name: Joi.string().min(3).max(20).required().messages({

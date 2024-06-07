@@ -34,8 +34,11 @@ export const setupServer = () => {
       res.status(err.status).json({
         status: err.status,
         message: err.message,
-        data: { message: 'Contact not found' },
+        ...(err.errors && { data: { errors: err.errors } }), // Відображення повідомлень про помилки тільки якщо є помилки
       });
+      //   message: err.message,
+      //   data: { errors: err.errors }, // Відображення повідомлень про помилки
+      // });
     } else {
       res.status(500).json({
         status: 500,
@@ -54,7 +57,6 @@ export const setupServer = () => {
   };
 
   //Застосвуємо middleware для обробки помилок
-
   app.use('*', notFoundHandler);
   app.use(errorHandler);
 
