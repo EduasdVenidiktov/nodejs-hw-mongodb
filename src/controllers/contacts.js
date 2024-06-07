@@ -10,7 +10,6 @@ import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
-// import { ContactsCollection } from '../db/Contact.js';
 
 export const routerContacts = Router();
 
@@ -19,28 +18,28 @@ export const validateBody = (schema) => async (req, res, next) => {
     await schema.validateAsync(req.body, { abortEarly: false });
     next();
   } catch (err) {
+    const errors = err.details.map((detail) => detail.message);
     const error = createHttpError(400, 'Bad Request', {
-      errors: err.details.map((detail) => detail.message),
+      errors,
     });
     next(error);
   }
 };
 
-const handleHttpError = (status, message) => {
-  throw createHttpError(status, { message });
-};
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
-
   const { sortBy, sortOrder } = parseSortParams(req.query);
 
+  const { isFavourite } = req.query;
+  const filter = { isFavourite };
   //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
   const contacts = await getAllContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
+    filter,
   });
 
   res.status(200).json({
@@ -54,7 +53,7 @@ export const getContactsController = async (req, res) => {
 export const getContactIdController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  // Перевірка валідності ObjectId
+  // Перевірка валідності ObjectId  66619380634fbf5df3ec245a7777777777
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return res.status(404).json({
       status: 404,
@@ -101,10 +100,14 @@ export const deleteContactByIdController = async (req, res, next) => {
   const contact = await deleteContactById(contactId);
   if (!contact) return next(createHttpError(404, 'Contact not found'));
 
-  res.status(204).send();
+  res.status(204).send(); //без повідомлення
+  // res.status(200).json({
+  //   status: 200,
+  //   message: 'Successfully deleted a contact!',
+  // });
 };
 
-export const patchContactController = async (req, res, next) => {
+export const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const updateContact = await patchContact(contactId, req.body);
   if (!updateContact) {
