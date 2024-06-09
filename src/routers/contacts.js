@@ -12,7 +12,7 @@ import { createContactsSchema, updateContactsSchema } from '../db/Contact.js';
 
 const routerContacts = Router();
 
-const ctrlWrapper = (controller) => {
+export const ctrlWrapper = (controller) => {
   return async (req, res, next) => {
     try {
       await controller(req, res, next);
