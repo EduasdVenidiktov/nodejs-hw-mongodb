@@ -1,4 +1,4 @@
-import { Router } from 'express';
+// import { Router } from 'express';
 import {
   createContact,
   deleteContactById,
@@ -11,20 +11,7 @@ import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
-export const routerContacts = Router();
-
-export const validateBody = (schema) => async (req, res, next) => {
-  try {
-    await schema.validateAsync(req.body, { abortEarly: false });
-    next();
-  } catch (err) {
-    const errors = err.details.map((detail) => detail.message);
-    const error = createHttpError(400, 'Bad Request', {
-      errors,
-    });
-    next(error);
-  }
-};
+// export const routerContacts = Router();
 
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
