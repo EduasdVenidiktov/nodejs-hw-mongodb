@@ -20,7 +20,7 @@ export const registerUserController = async (req, res) => {
 };
 
 export const loginUserController = async (req, res) => {
-  const user = await loginUser(req.body); //Вона викликає функцію loginUser, передаючи їй тіло запиту (req.body), яке містить дані для входу (email та пароль).
+  const session = await loginUser(req.body); //Вона викликає функцію loginUser, передаючи їй тіло запиту (req.body), яке містить дані для входу (email та пароль).
 
   //Функція встановлює два куки: refreshToken і sessionId, використовуючи метод res.cookie.
   res.cookie('refreshToken', session.refreshToken, {
@@ -28,7 +28,7 @@ export const loginUserController = async (req, res) => {
     expires: new Date(Date.now() + THIRTY_DAY),
   }); //refreshToken доступний тільки через HTTP-запити і не може бути доступним через JavaScript на стороні клієнта. Він має термін дії тридцять днів
 
-  res.cookie('sessionId', session._Id, {
+  res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAY),
   }); //теж саме і sessionId
