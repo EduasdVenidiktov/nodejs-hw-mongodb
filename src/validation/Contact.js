@@ -113,30 +113,3 @@ export const updateContactsSchema = Joi.object({
       'any.required': 'Contact Type is required',
     }),
 });
-
-export const registerUserSchema = Joi.object({
-  name: Joi.string().min(3).max(20).required().messages({}),
-  email: Joi.string().min(3).max(20).email().required('bcrypt'),
-  password: Joi.string().min(8).max(20).required(),
-});
-
-export const loginUserSchema = Joi.object({
-  email: Joi.string().min(3).max(20).email().required('bcrypt'),
-  password: Joi.string().min(8).max(20).required(),
-});
-
-const sessionSchema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: 'users' },
-    accessToken: { type: String, required: true },
-    refreshToken: { type: Date, required: true },
-    accessTokenValidUntil: { type: Date, required: true },
-    refreshTokenValidUntil: { type: Date, required: true },
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
-
-export const SessionsCollection = model('model', sessionSchema);

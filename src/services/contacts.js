@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { ContactsCollection } from '../db/Contact.js';
+import { ContactsCollection } from '../validation/Contact.js';
 import { SORT_ORDER } from '../index.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 

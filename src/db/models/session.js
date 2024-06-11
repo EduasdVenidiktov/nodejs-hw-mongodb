@@ -9,5 +9,4 @@ const sessionSchema = new Schema({
 });
 
 // Створення та експорт моделі на основі визначеної схеми
-const SessionCollection = model('model', sessionSchema);
-export default SessionCollection;
+export const Session = model('session', sessionSchema);

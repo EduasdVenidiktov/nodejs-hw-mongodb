@@ -6,40 +6,34 @@ import {
   getContactIdController,
   getContactsController,
   updateContactController,
-  validateBody,
 } from '../controllers/contacts.js';
-import { createContactsSchema, updateContactsSchema } from '../db/Contact.js';
+import {
+  createContactsSchema,
+  updateContactsSchema,
+} from '../validation/Contact.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { validateBody } from '../middlewares/validateBody.js';
+// import { authenticate } from '../middlewares/authenticate.js';
 
-const routerContacts = Router();
+const contactsRouter = Router();
 
-export const ctrlWrapper = (controller) => {
-  return async (req, res, next) => {
-    try {
-      await controller(req, res, next);
-    } catch (err) {
-      next(err);
-    }
-  };
-};
+// contactsRouter.use(authenticate);
 
-routerContacts.get('/contacts', ctrlWrapper(getContactsController));
-routerContacts.get('/contacts/:contactId', ctrlWrapper(getContactIdController));
+contactsRouter.get('/', ctrlWrapper(getContactsController));
+contactsRouter.get('/:contactId', ctrlWrapper(getContactIdController));
 
-routerContacts.post(
-  '/contacts',
+contactsRouter.post(
+  '/',
   validateBody(createContactsSchema),
   ctrlWrapper(createContactController),
 );
 
-routerContacts.delete(
-  '/contacts/:contactId',
-  ctrlWrapper(deleteContactByIdController),
-);
+contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactByIdController));
 
-routerContacts.patch(
-  '/contacts/:contactId',
+contactsRouter.patch(
+  '/:contactId',
   validateBody(updateContactsSchema),
   ctrlWrapper(updateContactController),
 );
 
-export default routerContacts;
+export default contactsRouter;
