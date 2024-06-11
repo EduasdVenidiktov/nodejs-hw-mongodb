@@ -5,7 +5,7 @@ import { env } from './utils/env.js';
 import contactsRouter from './routers/contacts.js';
 import createHttpError from 'http-errors';
 import mainRouter from './routers/index.js';
-// import cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 // import router from './routers/auth.js';
 
 // import authRouter from './routers/auth.js';
@@ -33,7 +33,7 @@ export const setupServer = () => {
   // app.use(routerContacts);
   // // app.use(router);
 
-  // app.use(cookieParser());
+  app.use(cookieParser());
   app.use(mainRouter);
 
   // Додаємо роутери до app як middleware
