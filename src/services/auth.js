@@ -5,7 +5,7 @@ import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
 
 export const registerUser = async (payload) => {
-  const encryptedPassword = await bcrypt.hash(payload.password, 10);
+  const encryptedPassword = await bcrypt.hash(payload.password, 10); //число 10 - це "salt rounds", також "cost factor". Визначає кількість операцій хешировання, котрі будуть виконані. Це впливає на складність та час, необходідні для генерації хеша пароля.
 
   return await User.create({
     ...payload,
@@ -21,7 +21,7 @@ export const loginUser = async (payload) => {
 
   const isEqual = await bcrypt.compare(payload.password, user.password); // Порівнюємо хеші паролів в payload з user
   if (!isEqual) {
-    throw createHttpError(401, 'Password not correct!'); //не обов'язково 'Password not correct!'
+    throw createHttpError(401, 'Unauthorized!'); //не обов'язково 'Password not correct!'
   }
 
   await Session.deleteOne({ userId: user._id }); // видалення попередньої сессії для уникнення конфліктів з новою сессією
@@ -39,6 +39,36 @@ export const loginUser = async (payload) => {
     refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
   });
 };
+
+// // Вход пользователя
+// export const loginUser = async ({ email, password }) => {
+//   const user = await User.findOne({ email });
+
+//   if (!user) {
+//     throw createHttpError(401, 'Invalid email or password');
+//   }
+
+//   const isPasswordValid = await bcrypt.compare(password, user.password);
+//   if (!isPasswordValid) {
+//     throw createHttpError(401, 'Invalid email or password');
+//   }
+
+//   await Session.deleteMany({ userId: user._id }); // Видаляємо попередні сессії
+
+//   const accessToken = randomBytes(30).toString('base64');
+//   const refreshToken = randomBytes(30).toString('base64');
+
+//   //створення нової сессії
+//   const session = await Session.create({
+//     userId: user._id,
+//     accessToken,
+//     refreshToken,
+//     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+//     refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
+//   });
+
+//   return session; //повернення нової сессії
+// };
 
 export const logoutUser = async (sessionId) => {
   await Session.deleteOne({ _id: sessionId });
