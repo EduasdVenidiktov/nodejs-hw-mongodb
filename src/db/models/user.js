@@ -9,7 +9,7 @@ const usersSchema = new Schema(
   { timestamps: true, versionKey: false }, // автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.
 );
 
-//додавання методу toJSON до схеми usersSchema забезпечує автоматичне видалення поля password з об'єктів користувача під час серіалізації в JSON
+//щоб пароль не був доступний на фронтенді. додавання методу toJSON до схеми usersSchema забезпечує автоматичне видалення поля password з об'єктів користувача під час серіалізації в JSON
 usersSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
