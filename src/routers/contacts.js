@@ -13,11 +13,11 @@ import {
 } from '../validation/Contact.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
-// import { authenticate } from '../middlewares/authenticate.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const contactsRouter = Router();
 
-// contactsRouter.use(authenticate);
+contactsRouter.use(authenticate);
 
 contactsRouter.get('/', ctrlWrapper(getContactsController));
 contactsRouter.get('/:contactId', ctrlWrapper(getContactIdController));
