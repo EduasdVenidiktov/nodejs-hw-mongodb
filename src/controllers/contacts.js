@@ -1,4 +1,3 @@
-// import { Router } from 'express';
 import {
   createContact,
   deleteContactById,
@@ -11,8 +10,6 @@ import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
-// export const routerContacts = Router();
-
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
@@ -22,7 +19,6 @@ export const getContactsController = async (req, res) => {
 
   const filter = { isFavourite, userId: req.user._id };
 
-  // const filter = { isFavourite };
   //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
   const contacts = await getAllContacts({
     page,
@@ -57,8 +53,6 @@ export const getContactIdController = async (req, res) => {
     });
   }
 
-  // const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
-
   res.status(200).json({
     status: 'success',
     message: `Successfully found contact with id ${contactId}!`,
@@ -69,8 +63,6 @@ export const getContactIdController = async (req, res) => {
 export const createContactController = async (req, res, next) => {
   try {
     const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
-
-    // const userId = req.user._id; // авторизація
 
     const contact = await createContact({
       name,
@@ -102,11 +94,6 @@ export const deleteContactByIdController = async (req, res, next) => {
   if (!contact) return next(createHttpError(404, 'Contact not found'));
 
   res.status(204).send(); //без повідомлення, без send() буде зависати
-
-  // res.status(200).json({
-  //   status: 200,
-  //   message: 'Successfully deleted a contact!',
-  // });
 };
 
 export const updateContactController = async (req, res, next) => {

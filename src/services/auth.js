@@ -15,7 +15,6 @@ export const registerUser = async (payload) => {
 };
 
 export const loginUser = async ({ email, password }) => {
-  // try {
   const user = await User.findOne({ email });
   if (!user) {
     throw createHttpError(401, 'User not found!'); //не обов'язково 'User not found!'
@@ -40,11 +39,6 @@ export const loginUser = async ({ email, password }) => {
     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
     refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAY),
   });
-
-  // return { user, accessToken, refreshToken };
-  // } catch (error) {
-  //   throw error;
-  // }
 };
 
 export const logoutUser = async (sessionId, refreshToken) => {
