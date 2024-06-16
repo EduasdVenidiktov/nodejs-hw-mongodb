@@ -19,7 +19,10 @@ export const getContactsController = async (req, res) => {
   const { sortBy, sortOrder } = parseSortParams(req.query);
 
   const { isFavourite } = req.query;
-  const filter = { isFavourite };
+
+  const filter = { isFavourite, userId: req.user._id };
+
+  // const filter = { isFavourite };
   //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
   const contacts = await getAllContacts({
     page,
@@ -27,6 +30,7 @@ export const getContactsController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
+    userId: req.user._id, //авторизація
   });
 
   res.status(200).json({
@@ -37,8 +41,12 @@ export const getContactsController = async (req, res) => {
 };
 
 // Обробик для отримання контакту по ID
-export const getContactIdController = async (req, res, next) => {
+export const getContactIdController = async (req, res) => {
   const { contactId } = req.params;
+
+  //авторизація
+  const userId = req.user._id;
+  const contact = await getContactById(contactId, userId); // фильтрация по userId
 
   // Перевірка валідності ObjectId  66619380634fbf5df3ec245a7777777777
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
@@ -49,7 +57,7 @@ export const getContactIdController = async (req, res, next) => {
     });
   }
 
-  const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
+  // const contact = await getContactById(contactId); // Реєстрація роута для отримання контакту за ID
 
   res.status(200).json({
     status: 'success',
@@ -61,12 +69,16 @@ export const getContactIdController = async (req, res, next) => {
 export const createContactController = async (req, res, next) => {
   try {
     const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
+
+    // const userId = req.user._id; // авторизація
+
     const contact = await createContact({
       name,
       phoneNumber,
       email,
       isFavourite,
       contactType,
+      userId: req.user._id, //авторизація
     }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
 
     res.status(201).json({
@@ -81,10 +93,12 @@ export const createContactController = async (req, res, next) => {
 
 export const deleteContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
+  const userId = req.user._id; //авторизація
+
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return next(createHttpError(404, 'Contact not found'));
   }
-  const contact = await deleteContactById(contactId);
+  const contact = await deleteContactById(contactId, userId); //авторизація
   if (!contact) return next(createHttpError(404, 'Contact not found'));
 
   res.status(204).send(); //без повідомлення, без send() буде зависати
@@ -97,7 +111,9 @@ export const deleteContactByIdController = async (req, res, next) => {
 
 export const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const updateContact = await patchContact(contactId, req.body);
+  const userId = req.user._id; //авторизація
+
+  const updateContact = await patchContact(contactId, req.body, userId); //авторизація
   if (!updateContact) {
     return next(createHttpError(404, 'Contact not found'));
   }
