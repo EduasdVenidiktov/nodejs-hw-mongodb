@@ -10,17 +10,19 @@ export const getAllContacts = async ({
   sortOrder = SORT_ORDER.ASC,
   sortBy = '_id',
   filter = {},
+  userId,
 }) => {
   const limit = perPage; //кількість елементів на сторінці
   const skip = (page - 1) * perPage; //Кількість елементів, які потрібно пропустити, щоб почати з потрібної сторінки
 
-  const contactsQuery = ContactsCollection.find();
+  const contactsQuery = ContactsCollection.find({ userId: filter.userId });
 
   // Додаємо фільтрацію за isFavourite
   if (filter.isFavourite) {
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
+  // ContactsCollection.find().where('parentId').equals(userId);
   const [contactsCount, contacts] = await Promise.all([
     ContactsCollection.countDocuments(contactsQuery.getFilter()), //отримання загальної кількості контактів
     contactsQuery
@@ -42,8 +44,9 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-  const contact = await ContactsCollection.findById(contactId);
+//авторизація
+export const getContactById = async (contactId, userId) => {
+  const contact = await ContactsCollection.findOne({ _id: contactId, userId }); //авторизація
   return contact;
 };
 
@@ -52,15 +55,15 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const patchContact = async (contactId, payload) => {
-  const contact = await ContactsCollection.findByIdAndUpdate(
-    contactId,
+export const patchContact = async (contactId, payload, userId) => {
+  const contact = await ContactsCollection.findOneAndUpdate(
+    { _id: contactId, userId },
     payload,
     { new: true },
   );
   return contact;
 };
 
-export const deleteContactById = async (contactId) => {
-  return ContactsCollection.findByIdAndDelete(contactId);
+export const deleteContactById = async (contactId, userId) => {
+  return ContactsCollection.findByIdAndDelete({ _id: contactId, userId });
 };

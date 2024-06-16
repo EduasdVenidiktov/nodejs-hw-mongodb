@@ -32,6 +32,11 @@ const contactsSchema = new Schema(
       required: true,
       default: 'personal',
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true, //  автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.
@@ -77,6 +82,7 @@ export const createContactsSchema = Joi.object({
       'any.only': 'Contact Type must be one of {#valids}',
       'any.required': 'Contact Type is required',
     }),
+  // parentId: Joi.string().required().messages({}), // нова властивість
 });
 
 export const updateContactsSchema = Joi.object({
