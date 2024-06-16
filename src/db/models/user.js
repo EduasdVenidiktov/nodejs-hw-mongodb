@@ -5,7 +5,6 @@ const usersSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    // parentId: { type: Schema.Types.ObjectId, ref: 'users' }, // авторизація, нова властивість
   },
   { timestamps: true, versionKey: false }, // автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.
 );

@@ -6,9 +6,6 @@ import contactsRouter from './routers/contacts.js';
 import createHttpError from 'http-errors';
 import mainRouter from './routers/index.js';
 import cookieParser from 'cookie-parser';
-// import router from './routers/auth.js';
-
-// import authRouter from './routers/auth.js';
 
 const PORT = process.env.PORT || Number(env('PORT', '3000'));
 
@@ -29,17 +26,12 @@ export const setupServer = () => {
       },
     }),
   );
-  // // Додаємо роутер до app як middleware
-  // app.use(routerContacts);
-  // // app.use(router);
 
   app.use(cookieParser());
   app.use(mainRouter);
 
   // Додаємо роутери до app як middleware
   app.use(contactsRouter);
-
-  // app.use('/auth', authRouter);
 
   // Обробка помилок сервера
   const errorHandler = (err, req, res, next) => {
@@ -50,9 +42,6 @@ export const setupServer = () => {
         message: err.message,
         ...(err.errors && { data: { errors: err.errors } }), // Відображення повідомлень про помилки тільки якщо є помилки
       });
-      //   message: err.message,
-      //   data: { errors: err.errors }, // Відображення повідомлень про помилки
-      // });
     } else {
       res.status(500).json({
         status: 500,
@@ -69,8 +58,6 @@ export const setupServer = () => {
       message: 'Route not found',
     });
   };
-
-  // app.use(cookieParser());
 
   //Застосвуємо middleware для обробки помилок
   app.use('*', notFoundHandler);

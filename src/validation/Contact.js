@@ -32,6 +32,7 @@ const contactsSchema = new Schema(
       required: true,
       default: 'personal',
     },
+    //авторизація
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -82,7 +83,6 @@ export const createContactsSchema = Joi.object({
       'any.only': 'Contact Type must be one of {#valids}',
       'any.required': 'Contact Type is required',
     }),
-  // parentId: Joi.string().required().messages({}), // нова властивість
 });
 
 export const updateContactsSchema = Joi.object({

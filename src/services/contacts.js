@@ -10,7 +10,6 @@ export const getAllContacts = async ({
   sortOrder = SORT_ORDER.ASC,
   sortBy = '_id',
   filter = {},
-  userId,
 }) => {
   const limit = perPage; //кількість елементів на сторінці
   const skip = (page - 1) * perPage; //Кількість елементів, які потрібно пропустити, щоб почати з потрібної сторінки
@@ -22,7 +21,6 @@ export const getAllContacts = async ({
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-  // ContactsCollection.find().where('parentId').equals(userId);
   const [contactsCount, contacts] = await Promise.all([
     ContactsCollection.countDocuments(contactsQuery.getFilter()), //отримання загальної кількості контактів
     contactsQuery
