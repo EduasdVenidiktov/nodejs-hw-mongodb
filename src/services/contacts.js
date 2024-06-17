@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { ContactsCollection } from '../validation/Contact.js';
+import { ContactsCollection } from '../db/models/Contact.js';
 import { SORT_ORDER } from '../index.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
@@ -54,7 +54,7 @@ export const createContact = async (payload) => {
 };
 
 export const patchContact = async (contactId, payload, userId) => {
-  const contact = await ContactsCollection.findOneAndUpdate(
+  const contact = await ContactsCollection.findOneAndDelete(
     { _id: contactId, userId },
     payload,
     { new: true },
@@ -63,5 +63,5 @@ export const patchContact = async (contactId, payload, userId) => {
 };
 
 export const deleteContactById = async (contactId, userId) => {
-  return ContactsCollection.findByIdAndDelete({ _id: contactId, userId });
+  return ContactsCollection.findOneAndDelete({ _id: contactId, userId });
 };

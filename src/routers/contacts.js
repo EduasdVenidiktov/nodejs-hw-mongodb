@@ -10,7 +10,7 @@ import {
 import {
   createContactsSchema,
   updateContactsSchema,
-} from '../validation/Contact.js';
+} from '../db/models/Contact.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { authenticate } from '../middlewares/authenticate.js';

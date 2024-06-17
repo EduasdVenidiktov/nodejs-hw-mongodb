@@ -79,7 +79,7 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   await Session.deleteOne({ _id: sessionId, refreshToken });
 
   //Перевірка: чи є такий user в БД
-  const user = await User.findById(session.userId);
+  const user = await User.findOne(session.userId);
   if (!user) {
     throw createHttpError(401, 'User is not in data!');
   }

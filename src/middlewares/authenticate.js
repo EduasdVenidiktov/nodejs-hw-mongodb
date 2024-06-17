@@ -37,7 +37,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     // Пошук користувача в колекції Users за ідентифікатором користувача, який зберігається в сесії.
-    const user = await User.findById(session.userId);
+    const user = await User.findOne(session.userId);
     if (!user) {
       return next(createHttpError(401, 'User this session is not found!'));
     }
