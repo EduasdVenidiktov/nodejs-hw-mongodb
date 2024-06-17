@@ -13,7 +13,7 @@ export const registerUserController = async (req, res) => {
   // Перевірка на існування користувача з таким email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return next(createHttpError(409, 'Email is already in use'));
+    return next(createHttpError(409, 'Email in use'));
   }
   const user = await registerUser(req.body);
   res.status(201).json({
@@ -57,6 +57,8 @@ export const logoutUserController = async (req, res) => {
     res.clearCookie('sessionId');
     res.clearCookie('refreshToken');
     res.status(204).send(); //Функція відправляє відповідь клієнту зі статусним кодом 204 (No Content). Це означає, що запит був успішно оброблений, але у відповіді немає тіла повідомлення.
+  } else {
+    res.status(204).send(); // Відповідь з кодом 204 навіть якщо немає sessionId
   }
 };
 
