@@ -8,7 +8,7 @@ import {
 import { THIRTY_DAY } from '../index.js';
 import { User } from '../db/models/user.js';
 
-export const registerUserController = async (req, res) => {
+export const registerUserController = async (req, res, next) => {
   const { email } = req.body;
   // Перевірка на існування користувача з таким email
   const existingUser = await User.findOne({ email });
@@ -21,6 +21,7 @@ export const registerUserController = async (req, res) => {
     message: 'Successfully registered a user!',
     data: user,
   });
+  next(error);
 };
 
 export const loginUserController = async (req, res) => {
@@ -58,7 +59,7 @@ export const logoutUserController = async (req, res) => {
     res.clearCookie('refreshToken');
     res.status(204).send(); //Функція відправляє відповідь клієнту зі статусним кодом 204 (No Content). Це означає, що запит був успішно оброблений, але у відповіді немає тіла повідомлення.
   } else {
-    res.status(204).send(); // Відповідь з кодом 204 навіть якщо немає sessionId
+    res.status(401).send(); // Відповідь з кодом 204 навіть якщо немає sessionId
   }
 };
 
