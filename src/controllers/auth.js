@@ -21,7 +21,7 @@ export const registerUserController = async (req, res, next) => {
     message: 'Successfully registered a user!',
     data: user,
   });
-  next(error);
+  next(error); //передає помилку 409 при повторній реєстрації одного і того ж e-mail
 };
 
 export const loginUserController = async (req, res) => {
