@@ -1,9 +1,14 @@
 import createHttpError from 'http-errors';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { FIFTEEN_MINUTES, THIRTY_DAY } from '../index.js';
 import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
 import crypto from 'crypto';
+// import { env } from '../utils/env.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import { ENV_VARS } from '../constans/index.js';
+import { env } from '../utils/env.js';
 
 export const registerUser = async (payload) => {
   const encryptedPassword = await bcrypt.hash(payload.password, 10); //число 10 - це "salt rounds", також "cost factor". Визначає кількість операцій хешировання, котрі будуть виконані. Це впливає на складність та час, необходідні для генерації хеша пароля.
@@ -89,4 +94,35 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
     userId: session.userId,
     ...newSession,
   });
+};
+
+export const sendResetPassword = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found!');
+  }
+
+  const resetToken = jwt.sign({ email }, 'eirugheiughwigt869hjr', {
+    expiresIn: '5m',
+  });
+
+  try {
+    await sendEmail({
+      from: env(ENV_VARS.SMTP_FROM),
+      to: email,
+      subject: 'Reset your password',
+      html: `
+    <h1>Hello!</h1>
+    <p>Click <a href="{env(
+      ENV_VARS.APP_DOMAIN,
+    )}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+    });
+  } catch (error) {
+    console.log(error);
+
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
 };

@@ -7,13 +7,12 @@ import {
   getContactsController,
   updateContactController,
 } from '../controllers/contacts.js';
-import {
-  createContactsSchema,
-  updateContactsSchema,
-} from '../db/models/Contact.js';
+
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { createContactsSchema } from '../validation/createContactsSchema.js';
+import { updateContactsSchema } from '../validation/updateContactsSchema.js';
 
 const contactsRouter = Router();
 
