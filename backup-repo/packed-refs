@@ -1,0 +1,20 @@
+# pack-refs with: peeled fully-peeled sorted 
+153f76ca7f0318c6f117837f235893b4af66eff6 refs/heads/hw2-mongodb
+302130026a55d535408c689c4f30a289d10448f5 refs/heads/hw3-crud
+c3fbf038fd79923790cf5387ef37c1add995ac43 refs/heads/hw4-validation
+89064ec73d056ad3805bebe9d15bfd753404f0fd refs/heads/hw5-auth
+89064ec73d056ad3805bebe9d15bfd753404f0fd refs/heads/hw6-email-and-images
+ec76793bfb8dbce4af1360138f24573d15744deb refs/heads/main
+63bd32574beb83caa9ba72acd53c44a0a5939da0 refs/pull/1/head
+ec76793bfb8dbce4af1360138f24573d15744deb refs/pull/10/head
+c3fbf038fd79923790cf5387ef37c1add995ac43 refs/pull/11/head
+89064ec73d056ad3805bebe9d15bfd753404f0fd refs/pull/12/head
+89064ec73d056ad3805bebe9d15bfd753404f0fd refs/pull/13/head
+65d40991f27894f46e3f3f8afc4d8cb51512431f refs/pull/2/head
+302130026a55d535408c689c4f30a289d10448f5 refs/pull/3/head
+9d8d3c201e244b7357236ea631e1f56b0ee5d61c refs/pull/4/head
+b5ab796baccff6ddd0eed57861a0218e58be63dd refs/pull/5/head
+5b44f27c8d82539dd0cbe4659b37ba7957c30aa1 refs/pull/6/head
+9c88d90bc1121be9658c47c62b7f642575ffbf87 refs/pull/7/head
+667229b8114e019db7e59ec66e5754d7df38d818 refs/pull/8/head
+560d9bcc8f178ed6a91efeb743156f3c87ed7c8b refs/pull/9/head
