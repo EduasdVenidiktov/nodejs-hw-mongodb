@@ -148,7 +148,12 @@ export const resetPassword = async ({ token, password }) => {
   try {
     tokenPayload = jwt.verify(token, env(ENV_VARS.JWT_SECRET));
   } catch (error) {
-    throw createHttpError(401, error.message);
+    throw createHttpError(401, 'Token is expired or invalid.');
+  }
+
+  const user = await User.findById(tokenPayload.sub);
+  if (!user) {
+    throw createHttpError(404, 'User not found!');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -159,4 +164,6 @@ export const resetPassword = async ({ token, password }) => {
     },
     { password: hashedPassword },
   );
+
+  await Session.deleteMany({ userId: user._id }); //видалення поточної сесії
 };
