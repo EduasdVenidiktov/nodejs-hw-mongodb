@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import Joi from 'joi';
+// import Joi from 'joi';
 
 const contactsSchema = new Schema(
   {
@@ -37,6 +37,9 @@ const contactsSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    photo: {
+      type: String,
     },
   },
   {

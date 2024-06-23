@@ -7,6 +7,8 @@
 // };
 
 //==== додати import Mongo constants=======
+import path from 'path';
+
 export const ENV_VARS = {
   PORT: 'PORT',
   MONGODB_USER: 'MONGODB_USER',
@@ -23,3 +25,6 @@ export const ENV_VARS = {
   JWT_SECRET: 'JWT_SECRET',
   APP_DOMAIN: 'APP_DOMAIN',
 };
+
+export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
+// export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');

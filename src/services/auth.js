@@ -6,7 +6,7 @@ import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
 import crypto from 'crypto';
 import { sendEmail } from '../utils/sendEmail.js';
-import { ENV_VARS } from '../constans/index.js';
+import { ENV_VARS } from '../constants/index.js';
 import { env } from '../utils/env.js';
 
 import handlebars from 'handlebars';

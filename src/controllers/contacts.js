@@ -9,6 +9,7 @@ import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+import { ContactsCollection } from '../db/models/Contact.js';
 
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
@@ -60,19 +61,28 @@ export const getContactIdController = async (req, res) => {
   });
 };
 
+// export const createContactController = async (req, res, next) => {
+//   try {
+//     const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
+
+//     const contact = await createContact({
+//       name,
+//       phoneNumber,
+//       email,
+//       isFavourite,
+//       contactType,
+//       userId: req.user._id, //авторизація
+//       photo: req.file ? req.file.path : undefined,
+//     }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
+
 export const createContactController = async (req, res, next) => {
+  const { body, file } = req;
   try {
-    const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
-
-    const contact = await createContact({
-      name,
-      phoneNumber,
-      email,
-      isFavourite,
-      contactType,
-      userId: req.user._id, //авторизація
-    }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
-
+    const contact = await ContactsCollection.create({
+      ...body,
+      userId: req.user._id, // Authorization
+      photo: file ? file.path : undefined,
+    });
     res.status(201).json({
       status: 201,
       message: 'Successfully created a contact!',
