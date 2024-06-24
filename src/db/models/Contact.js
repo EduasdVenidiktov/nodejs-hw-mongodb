@@ -38,9 +38,9 @@ const contactsSchema = new Schema(
       ref: 'User',
       required: true,
     },
-    photo: {
+    photoUrl: {
       type: String,
-    },
+    }, //this way loading url
   },
   {
     timestamps: true, //  автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.

@@ -6,11 +6,15 @@ import contactsRouter from './routers/contacts.js';
 import createHttpError from 'http-errors';
 import mainRouter from './routers/index.js';
 import cookieParser from 'cookie-parser';
+import { UPLOAD_DIR } from './constants/index.js';
 
 const PORT = process.env.PORT || Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
+
+  app.use('/uploads', express.static(UPLOAD_DIR));
+
   app.use(
     express.json({
       type: ['application/json', 'application/vnd.api+json'],
@@ -66,4 +70,6 @@ export const setupServer = () => {
   app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
   });
+
+  app.use('uploads', express.static(UPLOAD_DIR));
 };

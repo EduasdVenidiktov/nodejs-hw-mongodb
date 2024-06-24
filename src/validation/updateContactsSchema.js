@@ -33,4 +33,5 @@ export const updateContactsSchema = Joi.object({
       'any.only': 'Contact Type must be one of {#valids}',
       'any.required': 'Contact Type is required',
     }),
+  photoUrl: Joi.string().optional(),
 });

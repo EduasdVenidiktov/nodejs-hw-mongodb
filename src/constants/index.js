@@ -24,7 +24,9 @@ export const ENV_VARS = {
 
   JWT_SECRET: 'JWT_SECRET',
   APP_DOMAIN: 'APP_DOMAIN',
+
+  BACKEND_HOST: 'BACKEND_HOST', //delete
 };
 
 export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
-// export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
+export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');

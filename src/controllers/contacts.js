@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { ContactsCollection } from '../db/models/Contact.js';
+import { saveFileToLocalMachine } from '../middlewares/saveFileToLocalMachine.js';
 
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
@@ -61,37 +62,100 @@ export const getContactIdController = async (req, res) => {
   });
 };
 
-// export const createContactController = async (req, res, next) => {
-//   try {
-//     const { name, phoneNumber, email, isFavourite, contactType } = req.body; // деструктуризуємо, щоб витягнути значення полів з req.body - містить дані, що були надіслані у тілі HTTP-запиту.
-
-//     const contact = await createContact({
-//       name,
-//       phoneNumber,
-//       email,
-//       isFavourite,
-//       contactType,
-//       userId: req.user._id, //авторизація
-//       photo: req.file ? req.file.path : undefined,
-//     }); //createContact — функція, яка створює новий контакт у базі даних за допомогою отриманих даних та зберігається в contact.
-
 export const createContactController = async (req, res, next) => {
   const { body, file } = req;
   try {
+    let photoUrl;
+
+    if (file) {
+      photoUrl = await saveFileToLocalMachine(file);
+    }
+
     const contact = await ContactsCollection.create({
       ...body,
       userId: req.user._id, // Authorization
-      photo: file ? file.path : undefined,
+      photoUrl: photoUrl,
     });
+
     res.status(201).json({
       status: 201,
       message: 'Successfully created a contact!',
       data: contact,
     });
   } catch (error) {
-    next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
+    next(error); // Обработка ошибок
   }
 };
+//===========working variant===========================================================================
+// export const createContactController = async (req, res, next) => {
+//   const { body, file } = req;
+//   try {
+//     const contact = await ContactsCollection.create({
+//       ...body,
+//       userId: req.user._id, // Authorization
+//       photo: file ? file.path : undefined,
+//     });
+
+//     res.status(201).json({
+//       status: 201,
+//       message: 'Successfully created a contact!',
+//       data: contact,
+//     });
+//   } catch (error) {
+//     next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
+//   }
+// };
+//======
+// export const createContactController = async (req, res, next) => {
+//   const { body, file } = req;
+//   try {
+//     let photoUrl = file ? await saveFileToLocalMachine(file) : null;
+
+//     if (photo) {
+//       photoUrl = await saveFileToUploadDir(photo);
+//     }
+
+//     const contact = await ContactsCollection.create({
+//       ...body,
+//       userId: req.user._id,
+//       photo: photoUrl,
+//     });
+
+//     res.status(201).json({
+//       status: 201,
+//       message: 'Successfully created a contact!',
+//       data: contact,
+//     });
+//   } catch (error) {
+//     console.error('Error creating contact:', error);
+//     next(error);
+//   }
+// };
+
+// export const createContactController = async (req, res, next) => {
+//   const { body, file } = req;
+//   try {
+//     let photoUrl;
+
+//     if (file) {
+//       photoUrl = await saveFileToLocalMachine(file);
+//     }
+
+//     const contact = await ContactsCollection.create({
+//       ...body,
+//       userId: req.user._id,
+//       photo: photoUrl, // Используем URL вместо пути
+//     });
+
+//     res.status(201).json({
+//       status: 201,
+//       message: 'Successfully created a contact!',
+//       data: contact,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 export const deleteContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;

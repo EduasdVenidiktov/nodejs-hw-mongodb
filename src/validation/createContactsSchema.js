@@ -34,4 +34,5 @@ export const createContactsSchema = Joi.object({
       'any.only': 'Contact Type must be one of {#valids}',
       'any.required': 'Contact Type is required',
     }),
+  photo: Joi.string().optional(),
 });

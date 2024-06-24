@@ -1,9 +1,15 @@
 import multer from 'multer';
-import { TEMP_UPLOAD_DIR } from '../constants/index.js';
+// import { TEMP_UPLOAD_DIR } from '../constants/index.js';
+import { UPLOAD_DIR } from '../constants/index.js';
+
+// // Ensure the upload directory exists
+// if (!fs.existsSync(UPLOAD_DIR)) {
+//   fs.mkdirSync(UPLOAD_DIR);
+// }
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, TEMP_UPLOAD_DIR); // directory for file uploads
+    cb(null, UPLOAD_DIR); // directory for file uploads
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + file.originalname;
