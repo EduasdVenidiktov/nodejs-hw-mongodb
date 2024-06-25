@@ -1,11 +1,5 @@
 import multer from 'multer';
-// import { TEMP_UPLOAD_DIR } from '../constants/index.js';
 import { UPLOAD_DIR } from '../constants/index.js';
-
-// // Ensure the upload directory exists
-// if (!fs.existsSync(UPLOAD_DIR)) {
-//   fs.mkdirSync(UPLOAD_DIR);
-// }
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,10 +12,3 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
-
-// export const checkphoto = (req, res, next) => {
-//   if (!req.file) {
-//     return res.status(400).json({ message: 'photo is required' });
-//   }
-//   next();
-// };

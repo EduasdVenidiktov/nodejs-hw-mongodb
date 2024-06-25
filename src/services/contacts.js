@@ -2,7 +2,7 @@ import createHttpError from 'http-errors';
 import { ContactsCollection } from '../db/models/Contact.js';
 import { SORT_ORDER } from '../index.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
-import { saveFileToLocalMachine } from '../middlewares/saveFileToLocalMachine.js';
+import { saveFile } from '../utils/saveFile.js';
 
 //Функція getAllStudents виконує запит до колекції студентів у базі даних, отримує список студентів з урахуванням пагінації та повертає дані разом з метаданими пагінації.
 export const getAllContacts = async ({
@@ -50,9 +50,8 @@ export const getContactById = async (contactId, userId) => {
 };
 
 export const createContact = async (photo, ...payload) => {
-  const url = await saveFileToLocalMachine(photo);
+  const url = await saveFile(photo);
 
-  // const contact = await ContactsCollection.create(payload);
   const contact = await ContactsCollection.create({
     ...payload,
     photoUrl: url,

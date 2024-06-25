@@ -1,16 +1,15 @@
 import {
-  createContact,
   deleteContactById,
   getAllContacts,
   getContactById,
-  patchContact,
 } from '../services/contacts.js';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { ContactsCollection } from '../db/models/Contact.js';
-import { saveFileToLocalMachine } from '../middlewares/saveFileToLocalMachine.js';
+
+import { saveFile } from '../utils/saveFile.js';
 
 //обробник для отримання всіх контактів
 export const getContactsController = async (req, res) => {
@@ -68,7 +67,7 @@ export const createContactController = async (req, res, next) => {
     let photoUrl;
 
     if (file) {
-      photoUrl = await saveFileToLocalMachine(file);
+      photoUrl = await saveFile(file);
     }
 
     const contact = await ContactsCollection.create({
@@ -86,76 +85,6 @@ export const createContactController = async (req, res, next) => {
     next(error); // Обработка ошибок
   }
 };
-//===========working variant===========================================================================
-// export const createContactController = async (req, res, next) => {
-//   const { body, file } = req;
-//   try {
-//     const contact = await ContactsCollection.create({
-//       ...body,
-//       userId: req.user._id, // Authorization
-//       photo: file ? file.path : undefined,
-//     });
-
-//     res.status(201).json({
-//       status: 201,
-//       message: 'Successfully created a contact!',
-//       data: contact,
-//     });
-//   } catch (error) {
-//     next(error); //Якщо під час виконання виникає помилка, вона буде передана до наступного обробника помилок у ланцюжку middleware за допомогою next(error)
-//   }
-// };
-//======
-// export const createContactController = async (req, res, next) => {
-//   const { body, file } = req;
-//   try {
-//     let photoUrl = file ? await saveFileToLocalMachine(file) : null;
-
-//     if (photo) {
-//       photoUrl = await saveFileToUploadDir(photo);
-//     }
-
-//     const contact = await ContactsCollection.create({
-//       ...body,
-//       userId: req.user._id,
-//       photo: photoUrl,
-//     });
-
-//     res.status(201).json({
-//       status: 201,
-//       message: 'Successfully created a contact!',
-//       data: contact,
-//     });
-//   } catch (error) {
-//     console.error('Error creating contact:', error);
-//     next(error);
-//   }
-// };
-
-// export const createContactController = async (req, res, next) => {
-//   const { body, file } = req;
-//   try {
-//     let photoUrl;
-
-//     if (file) {
-//       photoUrl = await saveFileToLocalMachine(file);
-//     }
-
-//     const contact = await ContactsCollection.create({
-//       ...body,
-//       userId: req.user._id,
-//       photo: photoUrl, // Используем URL вместо пути
-//     });
-
-//     res.status(201).json({
-//       status: 201,
-//       message: 'Successfully created a contact!',
-//       data: contact,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 export const deleteContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
@@ -172,15 +101,40 @@ export const deleteContactByIdController = async (req, res, next) => {
 
 export const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const userId = req.user._id; //авторизація
+  const photo = req.file;
 
-  const updateContact = await patchContact(contactId, req.body, userId); //авторизація
-  if (!updateContact) {
-    return next(createHttpError(404, 'Contact not found'));
+  try {
+    let photoUrl;
+
+    if (photo) {
+      photoUrl = await saveFile(photo);
+    }
+
+    const updateData = {
+      ...req.body,
+    };
+
+    if (photoUrl) {
+      updateData.photoUrl = photoUrl;
+    }
+
+    const contact = await ContactsCollection.findByIdAndUpdate(
+      contactId,
+      updateData,
+      { new: true },
+    );
+
+    if (!contact) {
+      return next(createHttpError(404, 'Contact not found'));
+    }
+
+    res.json({
+      status: 200,
+      message: 'Successfully updated the contact!',
+      data: contact,
+    });
+  } catch (error) {
+    console.error('Error in updateContactController:', error);
+    next(createHttpError(500, 'Something went wrong'));
   }
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully created a contact!',
-    data: updateContact,
-  });
 };

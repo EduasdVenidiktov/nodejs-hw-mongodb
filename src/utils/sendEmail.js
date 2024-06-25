@@ -5,7 +5,6 @@ import { env } from './env.js';
 const transporter = nodemailer.createTransport({
   host: env(ENV_VARS.SMTP_HOST),
   port: env(ENV_VARS.SMTP_PORT),
-  //   port: Number(env(ENV_VARS.SMTP_PORT)), можливо застосувати це
 
   secure: false,
 
@@ -13,7 +12,6 @@ const transporter = nodemailer.createTransport({
     user: env(ENV_VARS.SMTP_USER),
     pass: env(ENV_VARS.SMTP_PASSWORD),
   },
-  // from: env(ENV_VARS.SMTP_USER),
 });
 
 export const sendEmail = async (options) => {
