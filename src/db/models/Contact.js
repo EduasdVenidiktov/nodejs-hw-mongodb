@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-// import Joi from 'joi';
 
 const contactsSchema = new Schema(
   {
@@ -32,21 +31,21 @@ const contactsSchema = new Schema(
       required: true,
       default: 'personal',
     },
-    //авторизація
+    //authorization
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    photoUrl: {
+    photo: {
       type: String,
     }, //this way loading url
   },
   {
-    timestamps: true, //  автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.
+    timestamps: true, //automatically adds the fields 'created' and 'updated', which will be updated when the document is created and updated, respectively.
     versionKey: false, //without '__V": 0;
   },
 );
 
-// Створення та експорт моделі
-export const ContactsCollection = model('contacts', contactsSchema); //створюємо модель студента
+// Creating and exporting the model
+export const ContactsCollection = model('contacts', contactsSchema); //creating contact`s model

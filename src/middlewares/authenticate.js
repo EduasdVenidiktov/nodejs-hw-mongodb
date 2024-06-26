@@ -11,7 +11,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     const [bearer, token] = authHeader.split(' '); //деструктуризовано
-    //=======другий варіант=======
+    //=======second option=======
     // const bearer = authHeader.split(' ')[0];
     //  const token = authHeader.split(' ')[1];
 

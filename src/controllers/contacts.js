@@ -11,7 +11,7 @@ import { ContactsCollection } from '../db/models/Contact.js';
 
 import { saveFile } from '../utils/saveFile.js';
 
-//обробник для отримання всіх контактів
+//handler for receiving all contacts
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
   const { sortBy, sortOrder } = parseSortParams(req.query);
@@ -20,14 +20,14 @@ export const getContactsController = async (req, res) => {
 
   const filter = { isFavourite, userId: req.user._id };
 
-  //Ця функція, звертається до бази даних для отримання списку студентів з відповідною пагінацією.
+  //this function adressed to DB to received the contacts`s list with the corresponding pagination
   const contacts = await getAllContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
     filter,
-    userId: req.user._id, //авторизація
+    userId: req.user._id, //authorization
   });
 
   res.status(200).json({
@@ -37,15 +37,15 @@ export const getContactsController = async (req, res) => {
   });
 };
 
-// Обробик для отримання контакту по ID
+// Handler for receiving a contact by ID
 export const getContactIdController = async (req, res) => {
   const { contactId } = req.params;
 
-  //авторизація
+  //Authorization
   const userId = req.user._id;
-  const contact = await getContactById(contactId, userId); // фильтрация по userId
+  const contact = await getContactById(contactId, userId); // filtration by userId
 
-  // Перевірка валідності ObjectId  66619380634fbf5df3ec245a7777777777
+  // Check validate ObjectId  66619380634fbf5df3ec245a7777777777
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return res.status(404).json({
       status: 404,
@@ -73,30 +73,33 @@ export const createContactController = async (req, res, next) => {
     const contact = await ContactsCollection.create({
       ...body,
       userId: req.user._id, // Authorization
-      photoUrl: photoUrl,
+      photo: photoUrl,
     });
+
+    const contactObj = contact.toObject();
+    const { photo, ...rest } = contactObj;
 
     res.status(201).json({
       status: 201,
       message: 'Successfully created a contact!',
-      data: contact,
+      data: { ...rest, photo },
     });
   } catch (error) {
-    next(error); // Обработка ошибок
+    next(error); // errors handling
   }
 };
 
 export const deleteContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const userId = req.user._id; //авторизація
+  const userId = req.user._id; //authorization
 
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return next(createHttpError(404, 'Contact not found'));
   }
-  const contact = await deleteContactById(contactId, userId); //авторизація
+  const contact = await deleteContactById(contactId, userId); //authorization
   if (!contact) return next(createHttpError(404, 'Contact not found'));
 
-  res.status(204).send(); //без повідомлення, без send() буде зависати
+  res.status(204).send(); //without 'message', without 'send()' will be freeze
 };
 
 export const updateContactController = async (req, res, next) => {
@@ -114,8 +117,8 @@ export const updateContactController = async (req, res, next) => {
       ...req.body,
     };
 
-    if (photoUrl) {
-      updateData.photoUrl = photoUrl;
+    if (photo) {
+      updateData.photo = photoUrl;
     }
 
     const contact = await ContactsCollection.findByIdAndUpdate(
@@ -128,10 +131,14 @@ export const updateContactController = async (req, res, next) => {
       return next(createHttpError(404, 'Contact not found'));
     }
 
+    // Remove photoUrl from the contact object
+    const contactObj = contact.toObject();
+    delete contactObj.photoUrl;
+
     res.json({
       status: 200,
       message: 'Successfully updated the contact!',
-      data: contact,
+      data: contactObj,
     });
   } catch (error) {
     console.error('Error in updateContactController:', error);

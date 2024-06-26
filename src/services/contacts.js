@@ -4,7 +4,7 @@ import { SORT_ORDER } from '../index.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { saveFile } from '../utils/saveFile.js';
 
-//Функція getAllStudents виконує запит до колекції студентів у базі даних, отримує список студентів з урахуванням пагінації та повертає дані разом з метаданими пагінації.
+//Function 'getAllStudents' executes a query to the contact`s collection in the database, retrieves a list of contacts with pagination, and returns the data along with pagination metadate.
 export const getAllContacts = async ({
   page = 1,
   perPage = 10,
@@ -12,40 +12,40 @@ export const getAllContacts = async ({
   sortBy = '_id',
   filter = {},
 }) => {
-  const limit = perPage; //кількість елементів на сторінці
-  const skip = (page - 1) * perPage; //Кількість елементів, які потрібно пропустити, щоб почати з потрібної сторінки
+  const limit = perPage; //quantity of items per page
+  const skip = (page - 1) * perPage; //the quantity of items to skip in order to start from the desired page
 
   const contactsQuery = ContactsCollection.find({ userId: filter.userId });
 
-  // Додаємо фільтрацію за isFavourite
+  // Add filtration for 'isFavourite'
   if (filter.isFavourite) {
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
   const [contactsCount, contacts] = await Promise.all([
-    ContactsCollection.countDocuments(contactsQuery.getFilter()), //отримання загальної кількості контактів
+    ContactsCollection.countDocuments(contactsQuery.getFilter()), //Receiving total quantity of contacts
     contactsQuery
-      .skip(skip) //якщо page = 2 і perPage = 10, то skip = 10, тобто буде пропущено 10 документів.
-      .limit(limit) //обмежує кількість документів, які будуть повернуті в результаті запиту.якщо perPage = 10, то буде вибрано лише 10 документів.
-      .sort({ [sortBy]: sortOrder }) //Метод sort сортує документи у колекції за певним полем (sortBy) у вказаному порядку (sortOrder).Використання квадратних дужок { [sortBy]: sortOrder } дозволяє динамічно вказувати поле для сортування. Наприклад, якщо sortBy = 'name' і sortOrder = 'asc', то { [sortBy]: sortOrder } еквівалентно { name: 'asc' }.
-      .exec(), //команда виконай
+      .skip(skip) //if page = 2 and perPage = 10, then skip = 10, meaning 10 documents will be skipped
+      .limit(limit) //limits the quantity of documents that will be returned in the query result. If perPage = 10, only 10 documents will be selected.
+      .sort({ [sortBy]: sortOrder }) //The 'sort' method sorts documents in the collection by a specific field (sortBy) in the specified order (sortOrder). Using square brackets { [sortBy]: sortOrder } allows for dynamically specifying the field to sort by. For example, if sortBy = 'name' and sortOrder = 'asc', then { [sortBy]: sortOrder } is equivalent to { name: 'asc' }.
+      .exec(), // executes the command
   ]);
 
   const paginationData = calculatePaginationData(contactsCount, page, perPage);
 
-  // Перевірка на існування сторінки
+  // Checking for page existence
   if (page > paginationData.totalPages) {
     throw createHttpError(404, 'Page not found');
   }
   return {
     data: contacts,
-    ...paginationData, //Метадані - це дані, які надають додаткову інформацію про інші дані/ про кількість доступних елементів, поточну сторінку, загальну кількість сторінок, наявність попередньої або наступної сторінки тощо
+    ...paginationData, //Metadata - these are data that provide additional information about other data, such as the number of available items, the current page, the total number of pages, the presence of a previous or next page, etc.
   };
 };
 
-//авторизація
+//authorization
 export const getContactById = async (contactId, userId) => {
-  const contact = await ContactsCollection.findOne({ _id: contactId, userId }); //авторизація
+  const contact = await ContactsCollection.findOne({ _id: contactId, userId }); //authorization
   return contact;
 };
 
@@ -54,7 +54,7 @@ export const createContact = async (photo, ...payload) => {
 
   const contact = await ContactsCollection.create({
     ...payload,
-    photoUrl: url,
+    photo: url,
   });
 
   return contact;

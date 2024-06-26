@@ -1,12 +1,3 @@
-// export const SMPT = {
-//   SMTP_HOST: 'SMTP_HOST',
-//   SMTP_PORT: 'SMTP_PORT',
-//   SMTP_USER: 'SMTP_USER',
-//   SMTP_PASSWORD: 'SMTP_PASSWORD',
-//   SMTP_FROM: 'SMTP_FROM',
-// };
-
-//==== додати import Mongo constants=======
 import path from 'path';
 
 export const ENV_VARS = {
@@ -31,7 +22,7 @@ export const ENV_VARS = {
 
   IS_CLOUDINARY_ENABLED: 'IS_CLOUDINARY_ENABLED',
 
-  BACKEND_HOST: 'BACKEND_HOST', //delete
+  BACKEND_HOST: 'BACKEND_HOST',
 };
 
 export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
