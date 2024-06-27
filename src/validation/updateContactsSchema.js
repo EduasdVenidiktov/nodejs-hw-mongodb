@@ -13,10 +13,9 @@ export const updateContactsSchema = Joi.object({
     'string.max': 'Phone Number should have at most {#limit} characters',
   }),
 
-  email: Joi.string().min(3).max(20).email().optional().messages({
+  email: Joi.string().min(3).email().optional().messages({
     'string.base': 'Email should be a string',
     'string.min': 'Email should have at least {#limit} characters',
-    'string.max': 'Email should have at most {#limit} characters',
     'string.email': 'Email must be a valid email address',
   }),
 
