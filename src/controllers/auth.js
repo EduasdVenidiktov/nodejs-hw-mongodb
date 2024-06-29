@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
 import {
+  loginOrSignupWithGoogle,
   loginUser,
   logoutUser,
   refreshUsersSession,
@@ -9,6 +10,8 @@ import {
 } from '../services/auth.js';
 import { THIRTY_DAY } from '../index.js';
 import { User } from '../db/models/user.js';
+import { generateAuthUrl } from '../utils/googleOAuth2.js';
+import { validateGoogleOAuthSchema } from '../validation/validateGoogleOAuth.js';
 
 export const registerUserController = async (req, res, next) => {
   const { email } = req.body;
@@ -115,5 +118,33 @@ export const resetPasswordController = async (req, res) => {
     status: 200,
     message: 'Password has been successfully reset.',
     data: {},
+  });
+};
+
+export const getGoogleOAuthUrlController = async (req, res) => {
+  const url = generateAuthUrl();
+  res.json({
+    status: 200,
+    message: 'Successfully get Google OAuth url!',
+    data: {
+      url,
+    },
+  });
+};
+
+export const verifyGoogleOAuthController = async (req, res) => {
+  const { code } = req.body;
+  await validateGoogleOAuthSchema.validateAsync({ code });
+
+  const session = await loginOrSignupWithGoogle(code);
+  await validateGoogleOAuthSchema.validateAsync({ code });
+
+  setupSession(res, session); //функція викликає setupSession, передаючи їй об'єкт відповіді (res) та нову сесію.
+  res.json({
+    status: 200,
+    message: 'Logged in this Google OAuth!',
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 };

@@ -12,6 +12,7 @@ import { env } from '../utils/env.js';
 import handlebars from 'handlebars';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { validateGoogleOAuthCode } from '../utils/googleOAuth2.js';
 
 export const registerUser = async (payload) => {
   const encryptedPassword = await bcrypt.hash(payload.password, 10); //число 10 - це "salt rounds", також "cost factor". Визначає кількість операцій хешировання, котрі будуть виконані. Це впливає на складність та час, необходідні для генерації хеша пароля.
@@ -166,4 +167,33 @@ export const resetPassword = async ({ token, password }) => {
   );
 
   await Session.deleteMany({ userId: user._id }); //видалення поточної сесії
+};
+
+export const loginOrSignupWithGoogle = async (code) => {
+  const loginTicket = await validateGoogleOAuthCode(code);
+  const payload = loginTicket.getPayload();
+
+  if (!payload) throw createHttpError(401);
+
+  let user = await User.findOne({ email: payload.email });
+
+  if (!user) {
+    const password = bcrypt.hash(crypto.randomBytes(30).toString('base64'));
+    user = await User.create({
+      name: payload.given_name + ' ' + payload.family_name,
+      email: payload.email,
+      password,
+    });
+  }
+
+  await Session.deleteOne({
+    userId: user._id,
+  });
+
+  const newSession = createSession();
+
+  return await Session.create({
+    userId: user._id,
+    ...newSession,
+  });
 };
