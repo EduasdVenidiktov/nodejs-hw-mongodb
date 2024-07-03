@@ -25,12 +25,12 @@ export const generateAuthUrl = () => {
 
 export const validateGoogleOAuthCode = async (code) => {
   try {
-    const { tokens } = await googleClient.getToken(code);
+    const { tokens } = await googleClient.getToken(code); //change code for the getToken
     const idToken = tokens.id_token;
     if (!idToken) throw createHttpError(401, 'Unauthorized');
     console.log(idToken);
 
-    const ticket = await googleClient.verifyIdToken({ idToken });
+    const ticket = await googleClient.verifyIdToken({ idToken }); // verifykating idToken
     return ticket;
   } catch (error) {
     console.log(error);

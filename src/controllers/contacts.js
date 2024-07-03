@@ -38,7 +38,7 @@ export const getContactsController = async (req, res) => {
 };
 
 // Handler for receiving a contact by ID
-export const getContactIdController = async (req, res) => {
+export const getContactIdController = async (req, res, next) => {
   const { contactId } = req.params;
 
   //Authorization
@@ -54,6 +54,9 @@ export const getContactIdController = async (req, res) => {
     });
   }
 
+  if (!contact) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
   res.status(200).json({
     status: 'success',
     message: `Successfully found contact with id ${contactId}!`,

@@ -1,0 +1,16 @@
+type: object
+properties:
+  id:
+    type: string
+    example: '5f5c7a8b9d3b2c001c8d4c8b'
+  email:
+    type: string
+    example: 'user@example.com'
+  createdAt:
+    type: string
+    format: date-time
+    example: '2021-01-01T00:00:00Z'
+  updatedAt:
+    type: string
+    format: date-time
+    example: '2021-01-01T00:00:00Z'

@@ -177,6 +177,7 @@ export const loginOrSignupWithGoogle = async (code) => {
 
   let user = await User.findOne({ email: payload.email });
 
+  //if user is absent, createing new user
   if (!user) {
     const password = bcrypt.hash(crypto.randomBytes(30).toString('base64'));
     user = await User.create({
@@ -185,7 +186,6 @@ export const loginOrSignupWithGoogle = async (code) => {
       password,
     });
   }
-
   await Session.deleteOne({
     userId: user._id,
   });

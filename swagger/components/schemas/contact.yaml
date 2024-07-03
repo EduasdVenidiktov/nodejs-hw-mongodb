@@ -1,0 +1,36 @@
+type: object
+required:
+  - name
+  - password
+  - phoneNumber
+  - contactType
+  - createdAt
+  - updatedAt
+properties:
+  name:
+    description: "Contact's name"
+    type: string
+    example: Eduard Venidictov
+  password:
+    description: "Contact's password"
+    type: string
+    example: '123456789'
+  phoneNumber:
+    description: "Contact's phoneNumber"
+    type: string
+    example: '+380500000000'
+  contactType:
+    description: "Contact's contactType"
+    type: string
+    enum:
+      - work
+      - home
+      - personal
+    example: personal
+  photo:
+    description: "Link to contact's photo"
+    oneOf:
+      - type: string
+        example: 'https://res.cloudinary.com/uqwgdu/image/upload/image.png'
+      - type: 'null'
+        example: null
