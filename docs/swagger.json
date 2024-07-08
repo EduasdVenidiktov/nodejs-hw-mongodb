@@ -589,7 +589,7 @@
           "name": {
             "description": "Contact's name",
             "type": "string",
-            "example": "Eduard Venidictov"
+            "example": "Eduard Venidiktov"
           },
           "password": {
             "description": "Contact's password",

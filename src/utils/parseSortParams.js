@@ -7,7 +7,7 @@ const parseSortOrder = (sortOrder) => {
 };
 
 const parseSortBy = (sortBy) => {
-  //Функція перевіряє, чи параметр sortBy (поле, за яким буде виконане сортування.)відповідає ключам контактів, за якими можна сортувати (наприклад, _id, name, phoneNumber і т.д.).
+  //function check, does the sortBy parameter (the field by which sorting will be performed) correspond to the keys of contacts that can be sorted (such as _id, name, phoneNumber, etc.)?
   const keyOfContacts = [
     '_id',
     'name',
@@ -24,12 +24,12 @@ const parseSortBy = (sortBy) => {
 };
 
 export const parseSortParams = (query) => {
-  const { sortOrder, sortBy } = query; //розпакування об'єкта query
+  const { sortOrder, sortBy } = query; //unpacking an object 'query'
 
   const parsedSortOrder = parseSortOrder(sortOrder); //parseSortOrder: Перевіряє, чи передане значення sortOrder є відомим напрямом сортування (в порядку зростання або спадання).
-  const parsedSortBy = parseSortBy(sortBy); //parseSortBy: Перевіряє, чи передане значення sortBy є допустимим полем для сортування (наприклад, _id, name, phoneNumber тощо).
+  const parsedSortBy = parseSortBy(sortBy); //parseSortBy: Checks if the provided sortBy value is a valid field for sorting (e.g., _id, name, phoneNumber, etc.).
   return {
-    sortOrder: parsedSortOrder, //Повертається об'єкт, який містить оброблені значення параметрів сортування.
+    sortOrder: parsedSortOrder, //Returns an object containing processed values of sorting parameters.
     sortBy: parsedSortBy,
   };
 };

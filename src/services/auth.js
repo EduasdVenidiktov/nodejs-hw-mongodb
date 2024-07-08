@@ -15,7 +15,7 @@ import fs from 'node:fs/promises';
 import { validateGoogleOAuthCode } from '../utils/googleOAuth2.js';
 
 export const registerUser = async (payload) => {
-  const encryptedPassword = await bcrypt.hash(payload.password, 10); //число 10 - це "salt rounds", також "cost factor". Визначає кількість операцій хешировання, котрі будуть виконані. Це впливає на складність та час, необходідні для генерації хеша пароля.
+  const encryptedPassword = await bcrypt.hash(payload.password, 10); //The number 10 represents "salt rounds" or "cost factor," determining the number of hashing operations performed. This affects the complexity and time required to generate a password hash.
 
   return await User.create({
     ...payload,
@@ -26,21 +26,21 @@ export const registerUser = async (payload) => {
 export const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw createHttpError(401, 'User not found!'); //не обов'язково 'User not found!'
+    throw createHttpError(401, 'User not found!'); //not mandatory 'User not found!'
   }
 
-  const isEqual = await bcrypt.compare(password, user.password); // Порівнюємо хеші паролів в payload з user
+  const isEqual = await bcrypt.compare(password, user.password); //compare password hashes 'payload' with  'user'.
   if (!isEqual) {
-    throw createHttpError(401, 'Unauthorized!'); //не обов'язково 'Password not correct!'
+    throw createHttpError(401, 'Unauthorized!'); //not mandatory 'Password not correct!'
   }
 
-  await Session.deleteOne({ userId: user._id }); // видалення попередньої сессії для уникнення конфліктів з новою сессією
+  await Session.deleteOne({ userId: user._id }); //delete the previous session to avoid conflicts with the new session
 
-  //сессія, генеруються нові токени доступу та оновлення
-  const accessToken = crypto.randomBytes(30).toString('base64'); // забезпечує високу ступінь випадковості, що ускладнює зловмисникам передбачити або згенерувати ті ж самі токени, підвищуючи безпеку системи.
-  const refreshToken = crypto.randomBytes(30).toString('base64'); //Кодування у Base64 дозволяє легко передавати токени через мережу, оскільки вони складаються тільки з символів, які можна безпечно використовувати у URL і JSON.
+  //session, generated new access and refresh tokens
+  const accessToken = crypto.randomBytes(30).toString('base64'); // Ensures a high degree of randomness, making it difficult for attackers to predict or generate the same tokens, thus enhancing system security.
+  const refreshToken = crypto.randomBytes(30).toString('base64'); //Base64 encoding allows tokens to be easily transmitted over a network since they consist only of characters safe for use in URLs and JSON.
 
-  //функція створює нову сесію в базі даних. Нова сесія включає ідентифікатор користувача, згенеровані токени доступу та оновлення, а також часові межі їхньої дії. Токен доступу має обмежений термін дії (наприклад, 15 хвилин), тоді як токен для оновлення діє довше (наприклад, один день).
+  //function created a new session in the DB. New session include user`s identifier, generated access and refresh tokens, and their respective expiration times. The access token has a limited lifespan (e.g., 15 minutes), while the refresh token lasts longer (e.g., one day).
   return await Session.create({
     userId: user._id,
     accessToken,
@@ -54,7 +54,7 @@ export const logoutUser = async (sessionId, refreshToken) => {
   await Session.deleteOne({ _id: sessionId, refreshToken: refreshToken });
 };
 
-//Функція createSession генерує нові accessToken і refreshToken, а також встановлює терміни їхньої дії та повертає об'єкт з новими токенами і термінами їхньої дії.
+//function 'createSession' generated new 'accessToken' and 'refreshToken', and sets their expiration periods, returning an object with new tokens and their expiration times.
 const createSession = () => {
   const accessToken = crypto.randomBytes(30).toString('base64');
   const refreshToken = crypto.randomBytes(30).toString('base64');
@@ -67,33 +67,33 @@ const createSession = () => {
   };
 };
 
-//функція refreshUsersSession обробляє запит на оновлення сесії користувача, перевіряє наявність і термін дії існуючої сесії, генерує нову сесію та зберігає її в базі даних.
-//refreshUsersSession виконує процес оновлення сесії і повертає об'єкт нової сесії.
+//function 'refreshUsersSession' handles the request to update a user session, checks the existence and expiration of the existing session, generates a new session, and stores it in the database.
+//'refreshUsersSession' performs the process of updating the session and returns an object representing the new session.
 export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   const session = await Session.findOne({
-    //Перевірка refreshUsersSession шукає в колекції SessionsCollection сесію з відповідним sessionId та refreshToken.
+    //Check refreshUsersSession find in collection 'SessionsCollection' session with the corresponding 'sessionId' and 'refreshToken'.
     _id: sessionId,
     refreshToken,
   });
   if (!session) {
     throw createHttpError(401, 'Session not found');
   }
-  //Перевірка, чи не минув термін дії refreshToken
+  //Check, whether the expiration period has passed 'refreshToken'
   const isSessionTokenExpired =
-    new Date() > new Date(session.refreshTokenValidUntil); //Якщо поточна дата перевищує значення refreshTokenValidUntil, це означає, що токен сесії прострочений.
+    new Date() > new Date(session.refreshTokenValidUntil); //If the current date exceeds the value of 'refreshTokenValidUntil', it means that the session token has expired.
   if (isSessionTokenExpired) {
     throw createHttpError(401, 'Session token expired');
   }
-  const newSession = createSession(); //Створення нової сесії:
+  const newSession = createSession(); //Create the new session:
   await Session.deleteOne({ _id: sessionId, refreshToken });
 
-  //Перевірка: чи є такий user в БД
+  //Check: is there such a user in DB
   const user = await User.findOne(session.userId);
   if (!user) {
     throw createHttpError(401, 'User is not in data!');
   }
 
-  //Створення та повернення нової сесії в базі даних використовуючи ідентифікатор користувача з існуючої сесії та дані нової сесії, згенеровані функцією createSession.
+  //Create and return the new session in DB used user`s identifier from existing session and the data of the new session generated by the 'createSession' function.
   return await Session.create({
     userId: session.userId,
     ...newSession,
@@ -166,7 +166,7 @@ export const resetPassword = async ({ token, password }) => {
     { password: hashedPassword },
   );
 
-  await Session.deleteMany({ userId: user._id }); //видалення поточної сесії
+  await Session.deleteMany({ userId: user._id }); //delete current session
 };
 
 export const loginOrSignupWithGoogle = async (code) => {

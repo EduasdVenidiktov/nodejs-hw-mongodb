@@ -15,7 +15,7 @@ import { validateGoogleOAuthSchema } from '../validation/validateGoogleOAuth.js'
 
 export const registerUserController = async (req, res, next) => {
   const { email } = req.body;
-  // Перевірка на існування користувача з таким email
+  // for the existence of a user with this email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return next(createHttpError(409, 'Email in use'));
@@ -26,45 +26,45 @@ export const registerUserController = async (req, res, next) => {
     message: 'Successfully registered a user!',
     data: user,
   });
-  next(error); //передає помилку 409 при повторній реєстрації одного і того ж e-mail
+  next(error); //Returns a 409 error for duplicate registration with the same email
 };
 
 export const loginUserController = async (req, res) => {
   // const user = await loginUser(req.body);
-  const session = await loginUser(req.body); // викликаємо функцію loginUser, передаючи їй тіло запиту (req.body), яке містить дані для входу (email та пароль).
+  const session = await loginUser(req.body); // Call the loginUser function, passing it the request body (req.body), which contains the login data (email and password).
 
-  //Функція встановлює два куки: refreshToken і sessionId, використовуючи метод res.cookie.
+  //The function sets two cookies: refreshToken and sessionId, using the res.cookie method.
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expires: new Date(Date.now() + THIRTY_DAY), //expires термін дії, з expire теж працює
-  }); //refreshToken доступний тільки через HTTP-запити і не може бути доступним через JavaScript на стороні клієнта. Він має термін дії тридцять днів
+    expires: new Date(Date.now() + THIRTY_DAY), //expires is the expiration term, but expire also works.
+  }); //The refreshToken is accessible only through HTTP requests and cannot be accessed via client-side JavaScript. It has a thirty-day expiration.
 
-  //session._id унікальний ідентифікатор сессії
+  //session._id unique session identifier
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAY),
-  }); //теж саме і sessionId
+  }); //the same applies to sessionId
 
-  //метод res.json для відправлення відповіді клієнту.
+  //the res.json method is used to send a response to the client
   res.json({
     status: 200,
     message: 'Contact is loged in',
     // data: { user },
-    data: { accessToken: session.accessToken }, // token ждя клієнта, front-end
+    data: { accessToken: session.accessToken }, // token for the client, front-end
   });
 };
 
 export const logoutUserController = async (req, res) => {
-  //перевіряє, чи існує кукі sessionId у запиті.
+  //check, is there a cookie named sessionId in the request.
   if (req.cookies.sessionId) {
-    await logoutUser(req.cookies.sessionId); //Якщо sessionId присутній, функція викликає logoutUser, передаючи їй значення sessionId. Це дозволяє видалити сесію користувача з бази даних або здійснити інші необхідні дії для виходу користувача.
+    await logoutUser(req.cookies.sessionId); //If 'sessionId' is present, the function calls 'logoutUser', passing sessionId as a parameter. This allows for deleting the user session from the database or performing other necessary logout actions.
 
-    //Функція очищає кукі sessionId і refreshToken, використовуючи метод res.clearCookie. Це видаляє відповідні куки з браузера клієнта, що забезпечує вихід користувача з системи на стороні клієнта.
+    //The function clears the cookies 'sessionId' and 'refreshToken' using the 'res.clearCookie' method. This removes the respective cookies from the client's browser, facilitating user logout from the client side.
     res.clearCookie('sessionId');
     res.clearCookie('refreshToken');
-    res.status(204).send(); //Функція відправляє відповідь клієнту зі статусним кодом 204 (No Content). Це означає, що запит був успішно оброблений, але у відповіді немає тіла повідомлення.
+    res.status(204).send(); //The function sends a response to the client with a status code 204 (No Content). This indicates that the request was successfully processed, but there is no message body in the response.
   } else {
-    res.status(401).send(); // Відповідь з кодом 204 навіть якщо немає sessionId
+    res.status(401).send(); // Responds with status code 204 even if there is no sessionId.
   }
 };
 

@@ -13,7 +13,7 @@ import { saveFile } from '../utils/saveFile.js';
 
 //handler for receiving all contacts
 export const getContactsController = async (req, res) => {
-  const { page, perPage } = parsePaginationParams(req.query); //контролер витягує з параметрів запиту (req.query) значення page та perPage, і перетворює їх на коректні числові значення з використанням значень за замовчуванням, якщо це необхідно
+  const { page, perPage } = parsePaginationParams(req.query); //The controller retrieves the values of 'page' and 'perPage' from the request parameters (req.query) and converts them into valid numerical values, using default values if necessary.
   const { sortBy, sortOrder } = parseSortParams(req.query);
 
   const { isFavourite } = req.query;

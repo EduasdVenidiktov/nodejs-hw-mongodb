@@ -36,17 +36,17 @@ export const setupServer = () => {
 
   app.use(mainRouter);
 
-  // Додаємо роутери до app як middleware
+  // Add routers to 'app' as 'middleware'
   app.use('/contacts', contactsRouter);
 
-  // Обробка помилок сервера
+  // Handling server errors
   const errorHandler = (err, req, res, next) => {
-    // Перевірка, чи отримали ми помилку від createHttpError (http://localhost:3000/contacts/777)
+    // Check, did we receive an error from createHttpError (http://localhost:3000/contacts/777)
     if (err instanceof createHttpError.HttpError) {
       res.status(err.status).json({
         status: err.status,
         message: err.message,
-        ...(err.errors && { data: { errors: err.errors } }), // Відображення повідомлень про помилки тільки якщо є помилки
+        ...(err.errors && { data: { errors: err.errors } }), // Display error messages only if there are errors
       });
     } else {
       res.status(500).json({
@@ -56,7 +56,7 @@ export const setupServer = () => {
     }
   };
 
-  // Обробка неіснуючих маршрутів http://localhost:3000/cont7777acts/
+  // Handling non-existent routes http://localhost:3000/cont7777acts/
   //localhost:3000/
   const notFoundHandler = (req, res, next) => {
     res.status(404).json({
@@ -65,7 +65,7 @@ export const setupServer = () => {
     });
   };
 
-  //Застосвуємо middleware для обробки помилок
+  //Applying 'middleware' for error handling
   app.use('*', notFoundHandler);
   app.use(errorHandler);
 

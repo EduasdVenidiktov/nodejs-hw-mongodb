@@ -1,17 +1,17 @@
 const parseNumber = (number, defaultValue) => {
-  const isString = typeof number === 'string'; //перевіряється, чи є number рядком (string)
-  if (!isString) return defaultValue; //Якщо number не є рядком, функція негайно повертає defaultValuey
+  const isString = typeof number === 'string'; //check, isnumber is string
+  if (!isString) return defaultValue; //If number isn`t string, function immediately return 'defaultValuey'
 
-  const parsedNumber = parseInt(number, 10); //parseInt('123abc') поверне 123
+  const parsedNumber = parseInt(number, 10); //parseInt('123abc') return 123
   if (Number.isNaN(parsedNumber)) {
     return defaultValue;
   }
   return parsedNumber;
 };
-// parseNumber('42', 0) поверне 42, оскільки рядок '42' успішно парситься в число.
-// parseNumber('abc', 0) поверне 0, оскільки рядок 'abc' не можна парсити в число і результатом буде NaN.
-// parseNumber(123, 0) поверне 0, оскільки вхідне значення не є рядком.
-// parseNumber('123abc', 0) поверне 123, оскільки parseInt парсить початок рядка до першого некоректного символу.
+// parseNumber('42', 0) return 42, since the string '42' successfully parses into a number.
+// parseNumber('abc', 0) return 0, since the string 'abc' cannot parse it into a number, and the result will be NaN.
+// parseNumber(123, 0) return 0, since the input value is not a string.
+// parseNumber('123abc', 0) return 123, since 'parseInt' parses the beginning of the string until the first incorrect character.
 
 export const parsePaginationParams = (query) => {
   let page = parseNumber(query.page, 1);

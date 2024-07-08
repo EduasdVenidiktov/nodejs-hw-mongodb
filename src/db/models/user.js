@@ -6,15 +6,15 @@ const usersSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
   },
-  { timestamps: true, versionKey: false }, // автоматично додає поля createdAt та updatedAt, які будуть оновлюватись при створенні та оновленні документа відповідно.
+  { timestamps: true, versionKey: false }, // Automatically adds fields 'createdAt' and 'updatedAt', which will be updated upon document creation and update, respectively.
 );
 
-//щоб пароль не був доступний на фронтенді. додавання методу toJSON до схеми usersSchema забезпечує автоматичне видалення поля password з об'єктів користувача під час серіалізації в JSON
+//o prevent the password from being exposed on the frontend, adding a 'toJSON' method to the 'usersSchema' ensures automatic removal of the password field from user objects during serialization to JSON.
 usersSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
   return obj;
 };
 
-// Створення та експорт моделі на основі визначеної схеми
+// Create and export model based defined schema
 export const User = model('users', usersSchema);

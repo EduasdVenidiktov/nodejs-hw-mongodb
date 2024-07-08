@@ -2,14 +2,14 @@ import { Schema, model } from 'mongoose';
 
 const sessionSchema = new Schema(
   {
-    userId: { type: Schema.ObjectId, required: true, unique: true }, //використовується для зберігання ідентифікаторів інших документів, що дозволяє створювати зв'язки між різними колекціями в MongoDB.до кого відноситься сессія
+    userId: { type: Schema.ObjectId, required: true, unique: true }, //It is used to store identifiers of other documents, allowing relationships to be created between different collections in MongoDB.
     accessToken: { type: String, required: true },
     refreshToken: { type: String, required: true },
-    accessTokenValidUntil: { type: Date, required: true }, //термін життя токену
+    accessTokenValidUntil: { type: Date, required: true }, //token lifetime
     refreshTokenValidUntil: { type: Date, required: true },
   },
   { timestamps: true, versionKey: false },
 );
 
-// Створення та експорт моделі на основі визначеної схеми
+// Creating and exporting a model based on a defined schema
 export const Session = model('sessions', sessionSchema);
